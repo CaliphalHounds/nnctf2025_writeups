@@ -1,0 +1,1 @@
+Una sucesión de primos consecutivos no es necesariamente segura... pero si no sabes por dónde empezar, podría serlo.

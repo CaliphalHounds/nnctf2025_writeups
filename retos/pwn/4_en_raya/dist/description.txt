@@ -1,0 +1,3 @@
+¡Bienvenido al clásico juego de 4 en raya!
+
+Tu objetivo es sencillo: coloca tus fichas y consigue alinear cuatro en horizontal, vertical o diagonal antes que tu oponente.

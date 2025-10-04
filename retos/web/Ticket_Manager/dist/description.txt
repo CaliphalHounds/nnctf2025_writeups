@@ -1,0 +1,1 @@
+Un gestor de tickets ligero y aparentemente inocente… Puedes guardar, editar y borrar tus textos como quieras. Fácil, ¿no? 🤔

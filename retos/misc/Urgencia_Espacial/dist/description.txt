@@ -1,0 +1,7 @@
+Hace unas horas, el equipo de comunicaciones terrestres detectó una transmisión urgente desde la Estación Espacial Internacional (ISS). Sin embargo, el mensaje llega corrupto e ilegible.
+
+El sistema de la ISS tiene un fallo conocido: el mensaje se envía con ráfagas de ruido que corrompen partes de la información. Cada vez que intentamos recibirlo, obtenemos una versión diferente y distorsionada.
+
+Tienes acceso a la consola de recepción y solo a un número limitado de intentos antes de que el canal se bloquee.
+
+Necesitamos reconstruir el mensaje que la tripulación intenta enviarnos. Puede tratarse de una advertencia vital para la seguridad de la Tierra.

@@ -1,0 +1,5 @@
+Un "buen" amigo me aseguró que esta implementación de RSA era totalmente segura. 
+"¿Por qué filtrar parte de la clave privada? ¿Cuál es el objetivo de ese leak?" Le pregunté. 
+
+Él me contestó con una sola palabra: 
+AURA

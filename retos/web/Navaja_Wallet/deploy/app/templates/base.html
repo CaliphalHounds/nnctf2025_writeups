@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script defer src="{{ url_for('static', filename='theme.js') }}"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="logo">₿</span>
+      <h1>{{ app_name }}</h1>
+    </div>
+    <button id="themeToggle" class="toggle" aria-label="Toggle theme">
+      <span class="toggle-text">Cambiar Modo</span>
+    </button>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <small>© {{ app_name }} — Flask starter</small>
+  </footer>
+</body>
+</html>

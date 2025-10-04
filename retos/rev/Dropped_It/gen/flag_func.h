@@ -1,0 +1,1 @@
+int check_entire_flag(char* flagPtr, unsigned char* byteBlob);

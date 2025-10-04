@@ -1,0 +1,3 @@
+¿Fractales? ¿Teoría del caos? Parecen conceptos interesantes para construir un PRNG.
+
+Nota: Los puntos base del fractal son coordenadas enteras y la constante μ se expresa con cuatro decimales.

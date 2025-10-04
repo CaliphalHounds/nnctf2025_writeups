@@ -1,0 +1,60 @@
+pip install git-dumper 
+
+
+git-dumper https://challs.caliphalhounds.com45104/.git . 
+
+❯ git log
+commit 4a8401438b2b50b93967b799efcacaa1948e4b2a (HEAD -> master)
+Author: Aeloop <aeloop@gmail.com>
+Date:   Sat Aug 23 19:55:15 2025 +0200
+
+    Página web final
+
+commit 5fd536d2d2f3c3aefaf2e3e6c6b4cbc464a532a2
+Author: Aeloop <aeloop@gmail.com>
+Date:   Sun Aug 17 20:17:00 2025 +0200
+
+    CV añadidos en miembros
+
+commit 9d329ca602e285197d736c6297aa5acb9f0ddc8f
+Author: Aeloop <aeloop@gmail.com>
+Date:   Sun Aug 17 18:33:00 2025 +0200
+
+    Prototipo de la página web
+
+
+❯ git checkout 5fd536d2d2f3c3aefaf2e3e6c6b4cbc464a532a2
+
+❯ tree .
+.
+├── 404.html
+├── cv
+│   ├── pdf
+│   │   ├── Alejandro.pdf
+│   │   ├── Brais.pdf
+│   │   ├── Carlos.pdf
+│   │   └── Diego.pdf
+│   └── png
+│       ├── Alejandro.png
+│       ├── Brais.png
+│       ├── Carlos.png
+│       └── Diego.png
+├── img
+│   ├── AELOOP.png
+│   ├── AKIO.jpg
+│   ├── BUTTERSOKA.jpg
+│   ├── logo1.png
+│   ├── logo2.png
+│   ├── logo3.png
+│   ├── logo4.png
+│   ├── logo5.png
+│   ├── logo6.webp
+│   ├── logo7.png
+│   ├── logo8.webp
+│   └── WEBER.png
+├── index.html
+├── Readme.md
+├── script.js
+└── styles.css
+
+5 directories, 25 files

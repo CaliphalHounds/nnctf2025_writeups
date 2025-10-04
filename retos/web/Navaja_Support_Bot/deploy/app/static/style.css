@@ -1,0 +1,319 @@
+/* =========================
+   Theme tokens
+   ========================= */
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --muted: #666666;
+  --card: #f5f5f5;
+  --accent: #111111;
+  --accent-text: #ffffff;
+  --border: #e6e6e6;
+  --shadow: rgba(0,0,0,0.06);
+}
+
+html[data-theme="dark"] {
+  --bg: #0e0e0e;
+  --text: #f3f3f3;
+  --muted: #aaaaaa;
+  --card: #161616;
+  --accent: #ffffff;
+  --accent-text: #000000;
+  --border: #262626;
+  --shadow: rgba(0,0,0,0.35);
+}
+
+/* =========================
+   Base
+   ========================= */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+  transition: background 0.3s ease, color 0.3s ease;
+  padding-bottom: 3rem;
+}
+
+/* =========================
+   Layout
+   ========================= */
+.site-header, .site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 6px var(--shadow);
+  background: var(--card);
+}
+.site-footer {
+  border-top: 1px solid var(--border);
+  border-bottom: none;
+  margin-top: 3rem;
+  box-shadow: 0 -1px 6px var(--shadow);
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+.logo {
+  font-size: 1.5rem;
+  padding: .3rem .6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.container {
+  max-width: 960px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+}
+
+/* =========================
+   Components
+   ========================= */
+.toggle {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: .8rem 1.2rem;           /* bigger size */
+  font-size: 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform .1s ease, background .2s ease;
+  min-width: 120px;               /* makes button more prominent */
+}
+.toggle:active { transform: scale(0.96); }
+.toggle-text { font-size: 1rem; font-weight: 500; }
+
+.hero {
+  padding: 3rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  box-shadow: 0 4px 18px var(--shadow);
+  text-align: center;
+  margin-bottom: 2.5rem;          /* added margin below hero */
+}
+.hero h2 { margin: 0 0 .75rem; font-size: 2.2rem; }
+.hero p { color: var(--muted); margin: 0 0 1.25rem; }
+.cta {
+  display: inline-block;
+  padding: 1rem 1.5rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  border-radius: 14px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-top: 1rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+.card {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px var(--shadow);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px var(--shadow);
+}
+.card h3 { margin: 0 0 .4rem; font-size: 1.15rem; }
+.card p { color: var(--muted); margin: 0; }
+
+/* =========================
+   Wallet page
+   ========================= */
+.wallet {
+  text-align: center;
+  margin-top: 2rem;
+}
+.wallet-title {
+  font-size: 2.4rem;
+  margin-bottom: .75rem;
+}
+.wallet-sub {
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+  font-size: 1.05rem;
+}
+
+.coin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+.coin-card {
+  background: linear-gradient(135deg, var(--card), var(--bg));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 8px 20px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0 0.5rem;
+}
+.coin-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px var(--shadow);
+}
+
+.coin-icon {
+  font-size: 3rem;
+  margin-bottom: .75rem;
+}
+.coin-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.coin-value {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin: .75rem 0 0;
+  color: var(--accent);
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 800px) {
+  .features { grid-template-columns: 1fr; }
+}
+
+/* Transfer form */
+.transfer {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.transfer-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.transfer-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.transfer-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.transfer-form select,
+.transfer-form input {
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+  min-width: 150px;
+  font-size: 1rem;
+}
+
+.transfer-msg {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+
+
+
+
+
+        body {
+            background-color: #121212;
+            color: #eee;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        #messages-container {
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #1e1e1e;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .message strong {
+            color: #fff;
+        }
+
+        form {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        textarea {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            resize: vertical;
+            font-size: 14px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #ff4b4b;
+        }
+   

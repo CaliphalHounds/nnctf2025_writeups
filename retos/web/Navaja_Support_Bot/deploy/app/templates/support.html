@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ username | safe }} NavajaSupport Panel</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: #121212;
+            color: #eee;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        #messages-container {
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #1e1e1e;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .message strong {
+            color: #fff;
+        }
+
+        form {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        textarea {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            resize: vertical;
+            font-size: 14px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #ff4b4b;
+        }
+    </style>
+</head>
+<body>
+
+<h1 id="panel-title">Cargando panel...</h1>
+
+<div id="messages-container"></div>
+
+<form id="support-form">
+    <label style="margin-bottom:5px;">Enviar mensaje al soporte:</label>
+    <textarea name="message" rows="4" placeholder="Escribe tu mensaje aquí..."></textarea>
+    <button type="submit">Enviar</button>
+</form>
+
+<script src="/static/script.js"></script>
+
+</body>
+</html>

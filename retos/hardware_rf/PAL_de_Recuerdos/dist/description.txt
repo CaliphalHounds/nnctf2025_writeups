@@ -1,0 +1,14 @@
+Entre las cosas que rescatamos el pasado fin de semana mi tío y yo, encontramos una caja llena de cintas, disquetes y papeles de su adolescencia. Rebuscando entre ellos, apareció una grabación con una etiqueta escrita a rotulador que decía:
+"Navaja Negra 2013 – PAL".
+
+Me miró con una mezcla de nostalgia y me dijo:
+
+"Esto es de una charla que emitieron hace años... Dicen que tenía un mensaje oculto, algo que solo unos pocos lograron ver. Yo lo intenté, pero nunca supe cómo hacerlo.
+Tú, con tus cacharros... ¿crees que podrías echarle un vistazo?”
+
+La señal parecía proceder de una antigua transmisión de vídeo en blanco y negro, con una resolución de 768 píxeles por línea y 576i, siguiendo el estándar PAL.
+Gracias a mis herramientas y algo de paciencia, logré digitalizarla y guardarla como un archivo .vcd, donde pude aislar la señal de sincronización de la carga útil.
+
+Mi tío, sin embargo, sigue convencido de que hay algo importante ahí dentro. Lo noto en sus ojos cada vez que lo recuerda.
+
+Yo... ya no sé si es solo nostalgia, o si realmente hay algo escondido que merece ser visto.

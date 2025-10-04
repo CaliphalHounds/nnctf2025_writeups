@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Navaja Negra Support Bot Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background: #4a2330; 
+            color: #eee; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            flex-direction: column;
+        }
+        h1 { 
+            font-size: 2.5em; 
+            margin-bottom: 30px; 
+            color: #fff; 
+            text-shadow: 2px 2px 5px #000; 
+            text-align: center;
+        }
+        .container { 
+            background: #6e2940; 
+            padding: 30px; 
+            border-radius: 10px; 
+            width: 300px; 
+        }
+        input, button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 5px; 
+            border: none; 
+        }
+        button { 
+            background: #444; 
+            color: #eee; 
+            cursor: pointer; 
+            font-weight: bold; 
+        }
+        button:hover { 
+            background: #666; 
+        }
+        .tabs { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-bottom: 15px; 
+        }
+        .tab { 
+            cursor: pointer; 
+            padding: 5px 10px; 
+            border-radius: 5px; 
+            background: #333; 
+        }
+        .tab.active { 
+            background: #555; 
+        }
+        .flash { 
+            margin: 5px 0; 
+            padding: 5px; 
+            border-radius: 3px; 
+        }
+        .success { background: #0a0; }
+        .error { background: #a00; }
+    </style>
+</head>
+<body>
+    <h1>Navaja Negra Support Bot</h1>
+    <div class="container">
+        <div class="tabs">
+            <div id="loginTab" class="tab active">Login</div>
+            <div id="registerTab" class="tab">Register</div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="/auth" id="authForm" method="POST">
+            <input type="hidden" name="action" id="actionInput" value="login">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <button type="submit" id="submitBtn">Login</button>
+        </form>
+    </div>
+
+    <script src="/static/loginscript.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+Hace poco encontré un juguete que tenía de pequeño dentro de mi armario que permite conectarlo con otros juguetes para desbloquear cosas, si no recuerdo mal. 
+
+Me acuerdo también que existía un item legendario, que nadie pudo conseguir nunca. Al parecer, tienes que conectar tu dispositivo con otro dispositivo. En el manual dice: 
+
+"Al conectarte a la Versión 13 y enviar un objeto específico, ¡ambos jugadores recibiréis un objeto especial! ¡¡Intenta descubrir el objeto!!".
+
+Me tomé la libertad de obtener algunos códigos usando un osciloscopio, pero no tengo un Versión 13, tengo un Versión 3 y un Versión 4.
+
+// Item 1 - enviar HP restore (versión 3)
+4E4143411143080079F3FE287BFE40BF-4E414341011A00029D15E03AEE736086-00000000000000007DEA362B3FAC8E00-00000000000000007DEA362B3FAC8E00
+
+// Item 2 - enviar MP restore (versión 4)
+4E41434110940800A9D77352D8067F02-4E41434101030007314F0AE6E1058833-00000000000000007DEA362B3FAC8E00-00000000000000007DEA362B3FAC8E00
+
+// Pelea entre dos versiones distintas (da fallo)
+4E41434110B402004F15E10A5B870107-4E414341000000008F32ECACFC5BD886-00000000000000007DEA362B3FAC8E00-00000000000000007DEA362B3FAC8E00

@@ -1,0 +1,9 @@
+Navaja Negra 2025: The Game
+
+Un juego que representa el caos y la dificultad de organizar un CTF y un evento al estilo de Navaja Negra.
+
+Tu misión es simple: recorre el escenario y encuentra todos los documentos perdidos para salvar el evento.
+
+_Creado con Unity por salamiproductions._
+
+Nota: Este juego contiene dos flags, introducid en este reto primera.

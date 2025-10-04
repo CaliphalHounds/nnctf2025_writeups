@@ -1,0 +1,1 @@
+Estoy cansado de las implementaciones estándar de cifrados... no funcionan en mi ordenador. Me dijeron que reducir el número de rondas no era seguro, así que hice algunas modificaciones por mi cuenta. Espero que sean suficientes.

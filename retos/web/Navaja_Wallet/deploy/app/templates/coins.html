@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="wallet">
+  <h2 class="wallet-title">Tu NavajaWallet</h2>
+  <p class="wallet-sub">Apoya a Navaja comprando NavajaCoins</p>
+
+  <div class="coin-grid">
+    <article class="coin-card">
+      <div class="coin-icon">💰</div>
+      <h3>Miguelito Coin</h3>
+      <p class="coin-value" id="miguelitoCoin">—</p>
+    </article>
+
+    <article class="coin-card">
+      <div class="coin-icon">🌙</div>
+      <h3>Noche NN Coin</h3>
+      <p class="coin-value" id="nocheNNCoin">—</p>
+    </article>
+
+    <article class="coin-card">
+      <div class="coin-icon">🔪</div>
+      <h3>Navaja Coin</h3>
+      <p class="coin-value" id="navajaCoin">—</p>
+    </article>
+  </div>
+</section>
+
+<!-- Transfer Form -->
+<section class="transfer">
+  <h2 class="transfer-title">Transferencias</h2>
+  <form id="transferForm" class="transfer-form">
+    <label>
+      From:
+      <select id="source" required>
+        <option value="miguelitoCoin">Miguelito Coin</option>
+        <option value="nocheNNCoin">Noche NN Coin</option>
+        <option value="navajaCoin" selected>Navaja Coin</option>
+      </select>
+    </label>
+
+    <label>
+      To:
+      <select id="target" required>
+        <option value="miguelitoCoin">Miguelito Coin</option>
+        <option value="nocheNNCoin">Noche NN Coin</option>
+        <option value="navajaCoin">Navaja Coin</option>
+      </select>
+    </label>
+
+    <label>
+      Amount:
+      <input type="number" id="amount" min="1" required>
+    </label>
+
+    <button type="submit" class="cta">Transfer</button>
+  </form>
+
+  <p id="transferMessage" class="transfer-msg"></p>
+</section>
+
+<script>
+  async function loadValues() {
+    const res = await fetch("/get-values");
+    const data = await res.json();
+    document.getElementById("miguelitoCoin").innerText = data.miguelitoCoin ?? "N/A";
+    document.getElementById("nocheNNCoin").innerText = data.nocheNNCoin ?? "N/A";
+    document.getElementById("navajaCoin").innerText = data.navajaCoin ?? "N/A";
+  }
+
+  document.getElementById("transferForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const source = document.getElementById("source").value;
+    const target = document.getElementById("target").value;
+    const amount = document.getElementById("amount").value;
+
+    const res = await fetch("/transfer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source, target, amount }),
+    });
+
+    const msgEl = document.getElementById("transferMessage");
+    if (!res.ok) {
+      const err = await res.json();
+      msgEl.innerText = "❌ " + (err.error || "Transfer failed");
+      msgEl.style.color = "red";
+      return;
+    }
+
+    const data = await res.json();
+    msgEl.innerText = "✅ Transfer successful!";
+    msgEl.style.color = "green";
+
+    // update values on page
+    document.getElementById("miguelitoCoin").innerText = data.miguelitoCoin;
+    document.getElementById("nocheNNCoin").innerText = data.nocheNNCoin;
+    document.getElementById("navajaCoin").innerText = data.navajaCoin;
+  });
+
+  loadValues();
+</script>
+{% endblock %}

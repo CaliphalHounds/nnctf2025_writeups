@@ -1,0 +1,358 @@
+# 16 KB RAM Computer
+
+> Navaja Negra CTF 2025
+
+> 02/10/2025 09:00 CEST - 04/10/2025 11:00 CEST
+
+* Categoría: Criptografía
+* Autor: Daysa
+* Dificultad: ★★★☆
+* Etiquetas: AES, Square Attack
+
+## Descripción
+    
+    Estoy cansado de las implementaciones estándar de cifrados... no funcionan en mi ordenador. Me dijeron que reducir el número de rondas no era seguro, así que hice algunas modificaciones por mi cuenta. Espero que sean suficientes.
+
+## Archivos
+    
+    server.py
+
+```python
+from os import urandom
+
+
+SBOX = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15, 0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75, 0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84, 0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf, 0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8, 0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2,	0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73, 0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb, 0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79, 0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08, 0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a, 0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, 0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16]
+RCON = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
+
+N_ROUNDS = 4
+BLOCK_SIZE = 16
+
+def rot_word(w):
+    return w[1:] + w[:1]
+
+def sub_word(w):
+    return [SBOX[b] for b in w]
+
+def xor_words(w1, w2):
+    return [b1 ^ b2 for b1, b2 in zip(w1, w2)]
+
+def expand_key(key):
+    Nk = 4
+    Nb = 4
+    Nr = 4
+
+    keys = []
+    for i in range(Nk):
+        keys.append(list(key[4*i:4*(i + 1)]))
+    
+    for i in range(Nk, Nb * (Nr + 1)):
+        temp = keys[i - 1][:]
+        if i % Nk == 0:
+            temp = xor_words(sub_word(rot_word(temp)), [RCON[i // Nk], 0x00, 0x00, 0x00])
+        keys.append(xor_words(keys[i - Nk], temp))
+    
+    round_keys = []
+    for i in range(0, len(keys), 4):
+        round_keys.append(b''.join(map(bytes, keys[i:i+4])))
+
+    return round_keys
+
+def add_round_key(state, round_key):
+    return [s ^ rk for s, rk in zip(state, round_key)]
+
+def sub_bytes(state):
+    return [SBOX[b] for b in state]
+
+def shift_rows(state):
+    return [state[0], state[5], state[10], state[15], state[4], state[9], state[14], state[3], state[8], state[13], state[2], state[7], state[12], state[1], state[6], state[11]]
+
+xtime = lambda a: (((a << 1) ^ 0x1b) & 0xff) if (a & 0x80) else (a << 1)
+
+def mix_single_diagonal(d):
+    t = d[0] ^ d[1] ^ d[2] ^ d[3]
+    u = d[0]
+    d[0] ^= t ^ xtime(d[0] ^ d[1])
+    d[1] ^= t ^ xtime(d[1] ^ d[2])
+    d[2] ^= t ^ xtime(d[2] ^ d[3])
+    d[3] ^= t ^ xtime(d[3] ^ u)
+
+    return d
+
+def mix_diagonals(state):
+    diagonals = [[state[3], state[2], state[7], state[1]], [state[6], state[11], state[0], state[5]], [state[10], state[15], state[4], state[9]], [state[14], state[8], state[13], state[12]]]
+    for i in range(4):
+        diagonals[i] = mix_single_diagonal(diagonals[i])
+
+    state[3], state[2], state[7], state[1] = diagonals[0]
+    state[6], state[11], state[0], state[5] = diagonals[1]
+    state[10], state[15], state[4], state[9] = diagonals[2]
+    state[14], state[8], state[13], state[12] = diagonals[3]
+
+    return state
+
+def pad(data):
+    padding_len = BLOCK_SIZE - (len(data) % BLOCK_SIZE)
+
+    return data + bytes([padding_len] * padding_len)
+
+def encrypt(m, key):
+    round_keys = expand_key(key)
+
+    state = list(m)
+    state = add_round_key(state, round_keys[0])
+
+    for i in range(1, N_ROUNDS):
+        state = sub_bytes(state)
+        state = shift_rows(state)
+        state = mix_diagonals(state)
+        state = add_round_key(state, round_keys[i])
+    state = sub_bytes(state)
+    state = shift_rows(state)
+    state = add_round_key(state, round_keys[N_ROUNDS])
+    
+    return bytes(state)
+
+def main():
+    key = urandom(BLOCK_SIZE)
+
+    with open("flag.txt", "rb") as file:
+        flag = file.read()
+    assert len(flag) <= 16
+    
+    c = encrypt(pad(flag), key)
+
+    print("Bienvenido al sistema de cifrado AES más seguro del mundo")
+    print("En él no se mezclan las columnas... ¡se mezclan las diagonales!")
+    print("Tan seguro sé que es que te doy mi secreto: " + c.hex())
+    print("¿Qué quieres cifrar? (hex)")
+
+    for _ in range(500):
+        try:
+            m = bytes.fromhex(input("> "))
+            c = encrypt(pad(m), key)
+            print("Tu mensaje cifrado: " + c.hex())
+        except:
+            print(":(")
+            exit()
+
+if __name__ == '__main__':
+	main()
+```
+
+## Resolución
+
+Sistema de cifrado AES personalizado reducido a 4 rondas. No tiene la operación MixColumns, tiene una variación llamada MixDiagonals.
+
+La solución buscada requiere de conocer bien el cifrado AES y saber aplicar un Square Attack en un cifrado personalizado. El mejor recurso para entender bien el ataque es el siguiente: [Attacking 4 rounds with the Square attack, de David Wong](https://www.davidwong.fr/blockbreakers/square_2_attack4rounds.html).
+
+### Cambios en el cifrado AES personalizado
+
+La única función no estándar es la operación MixDiagonals. Esta operación es muy parecida a MixColumns: opera en $GF(2^8)$ y aplica la misma combinación de xtime y XOR que implementa la matriz de MixColumns. Sin embargo, en vez de aplicarse a las columnas del estado, se aplica a cuatro "diagonales" del estado.
+
+```python
+def mix_single_diagonal(d):
+    t = d[0] ^ d[1] ^ d[2] ^ d[3]
+    u = d[0]
+    d[0] ^= t ^ xtime(d[0] ^ d[1])
+    d[1] ^= t ^ xtime(d[1] ^ d[2])
+    d[2] ^= t ^ xtime(d[2] ^ d[3])
+    d[3] ^= t ^ xtime(d[3] ^ u)
+
+    return d
+
+def mix_diagonals(state):
+    diagonals = [[state[3], state[2], state[7], state[1]], [state[6], state[11], state[0], state[5]], [state[10], state[15], state[4], state[9]], [state[14], state[8], state[13], state[12]]]
+    for i in range(4):
+        diagonals[i] = mix_single_diagonal(diagonals[i])
+
+    state[3], state[2], state[7], state[1] = diagonals[0]
+    state[6], state[11], state[0], state[5] = diagonals[1]
+    state[10], state[15], state[4], state[9] = diagonals[2]
+    state[14], state[8], state[13], state[12] = diagonals[3]
+
+    return state
+```
+
+### Square Attack y conjunto delta
+
+Un conjunto delta es un conjunto de estados o textos claros construido de manera que, para el primer byte de cada uno, se toman todos los valores posibles mientras que el resto de bytes permanecen fijos. Así, mientras se realicen operaciones lineales, el XOR de ese byte específico sobre todos los elementos del conjunto es 0.
+
+Tras tres rondas de AES estándar esta propiedad se mantiene, y es la cuarta la que rompe la linealidad.
+
+Cuando el sistema de cifrado es reducido cuatro rondas, tras tres rondas quedan tres operaciones por hacer: un SubBytes, un ShiftRows y un último AddRoundKey. El SubBytes no cambia nada, solo aplica la tabla de sustitución, es el ShiftRows el responsable de romper la propiedad.
+
+Un atacante puede hacer XOR, simulando el comportamiento del AddRoundKey, de todos los valores posibles con el primer byte del estado final del cifrado. Tras esto, se aplica una función InvShiftRows estándar, y uno de esos 256 conjuntos delta tendrá la propiedad. El byte de la clave que haya devuelto la propiedad a ese conjunto será un byte de esta última clave.
+
+De esta manera, byte a byte, se recupera la clave del último AddRoundKey.
+
+### InvExpandKey
+
+La función ExpandKey de AES es la función responsable de, desde una clave inicial de 16 bytes, obtener una clave para cada ronda del cifrado AES. Las operaciones que permiten estas transformaciones no están pensadas para ser irreversibles, es trivial programar una función inversa.
+
+```python
+def inv_expand_key(round_key_4):
+    Nk = 4
+    Nb = 4
+    Nr = 4
+
+    W = [0] * (Nb * (Nr + 1) * Nk // Nk)
+    
+    for i in range(Nb):
+        W[16 + i] = list(round_key_4[4*i : 4*i+4])
+    
+    for i in range(Nb*(Nr+1) - 1, Nk - 1, -1):
+        if i % Nk == 0:
+            temp = sub_word(rot_word(W[i-1]))
+            temp[0] ^= RCON[i // Nk]
+        else:
+            temp = W[i-1]
+        W[i - Nk] = xor_words(W[i], temp)
+    
+    key0 = []
+    for j in range(Nk):
+        key0.extend(W[j])
+    
+    return bytes(key0)
+```
+
+### Conclusiones
+
+Aunque el ejercicio presente un cifrado AES personalizado, el Square Attack estándar es aplicable a este contexto. Sin embargo, los jugadores no pueden simplemente ejecutar cualquier ataque que encuentren en github, ya que tendrán que programar sus propias funciones inversoras y modificar el ataque para que permita la nueva operación.
+
+```python
+from pwn import *
+from chall import BLOCK_SIZE, expand_key, add_round_key, sub_bytes, shift_rows, mix_diagonals
+from os import urandom
+from itertools import product
+from tqdm import tqdm
+
+
+SBOX = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15, 0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75, 0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84, 0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf, 0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8, 0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2,	0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73, 0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb, 0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79, 0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08, 0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a, 0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, 0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16]
+RCON = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
+INV_SBOX = [0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb, 0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb, 0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e, 0x08, 0x2e, 0xa1, 0x66, 0x28, 0xd9, 0x24, 0xb2, 0x76, 0x5b, 0xa2, 0x49, 0x6d, 0x8b, 0xd1, 0x25, 0x72, 0xf8, 0xf6, 0x64, 0x86, 0x68, 0x98, 0x16, 0xd4, 0xa4, 0x5c, 0xcc, 0x5d, 0x65, 0xb6, 0x92, 0x6c, 0x70, 0x48, 0x50, 0xfd, 0xed, 0xb9, 0xda, 0x5e, 0x15, 0x46, 0x57, 0xa7, 0x8d, 0x9d, 0x84, 0x90, 0xd8, 0xab, 0x00, 0x8c, 0xbc, 0xd3, 0x0a, 0xf7, 0xe4, 0x58, 0x05, 0xb8, 0xb3, 0x45, 0x06, 0xd0, 0x2c, 0x1e, 0x8f, 0xca, 0x3f, 0x0f, 0x02, 0xc1, 0xaf, 0xbd, 0x03, 0x01, 0x13, 0x8a, 0x6b, 0x3a, 0x91, 0x11, 0x41, 0x4f, 0x67, 0xdc, 0xea, 0x97, 0xf2, 0xcf, 0xce, 0xf0, 0xb4, 0xe6, 0x73, 0x96, 0xac, 0x74, 0x22, 0xe7, 0xad, 0x35, 0x85, 0xe2, 0xf9, 0x37, 0xe8, 0x1c, 0x75, 0xdf, 0x6e, 0x47, 0xf1, 0x1a, 0x71, 0x1d, 0x29, 0xc5, 0x89, 0x6f, 0xb7, 0x62, 0x0e, 0xaa, 0x18, 0xbe, 0x1b, 0xfc, 0x56, 0x3e, 0x4b, 0xc6, 0xd2, 0x79, 0x20, 0x9a, 0xdb, 0xc0, 0xfe, 0x78, 0xcd, 0x5a, 0xf4, 0x1f, 0xdd, 0xa8, 0x33, 0x88, 0x07, 0xc7, 0x31, 0xb1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xec, 0x5f, 0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef, 0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61, 0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d]
+
+N_ROUNDS = 4
+
+def inv_sub_bytes(state):
+    return [INV_SBOX[b] for b in state]
+
+def inv_shift_rows(state):
+    return [state[0], state[13], state[10], state[7], state[4], state[1], state[14], state[11], state[8], state[5], state[2], state[15], state[12], state[9], state[6], state[3]]
+
+xtime = lambda a: (((a << 1) ^ 0x1b) & 0xff) if (a & 0x80) else (a << 1)
+
+def gf_mul(a, b):
+    res = 0
+    for _ in range(8):
+        if b & 1:
+            res ^= a
+        a = xtime(a)
+        b >>= 1
+
+    return res & 0xff
+
+def inv_mix_diagonals(state):
+    inv_m = [[0x0e, 0x0b, 0x0d, 0x09], [0x09, 0x0e, 0x0b, 0x0d], [0x0d, 0x09, 0x0e, 0x0b], [0x0b, 0x0d, 0x09, 0x0e]]
+    diagonals = [[3, 2, 7, 1], [6, 11, 0, 5], [10, 15, 4, 9], [14, 8, 13, 12]]
+
+    state2 = state[:]
+    for i0, i1, i2, i3 in diagonals:
+        a0, a1, a2, a3 = state[i0], state[i1], state[i2], state[i3]
+        b0 = gf_mul(a0, inv_m[0][0]) ^ gf_mul(a1, inv_m[0][1]) ^ gf_mul(a2, inv_m[0][2]) ^ gf_mul(a3, inv_m[0][3])
+        b1 = gf_mul(a0, inv_m[1][0]) ^ gf_mul(a1, inv_m[1][1]) ^ gf_mul(a2, inv_m[1][2]) ^ gf_mul(a3, inv_m[1][3])
+        b2 = gf_mul(a0, inv_m[2][0]) ^ gf_mul(a1, inv_m[2][1]) ^ gf_mul(a2, inv_m[2][2]) ^ gf_mul(a3, inv_m[2][3])
+        b3 = gf_mul(a0, inv_m[3][0]) ^ gf_mul(a1, inv_m[3][1]) ^ gf_mul(a2, inv_m[3][2]) ^ gf_mul(a3, inv_m[3][3])
+        state2[i0], state2[i1], state2[i2], state2[i3] = b0, b1, b2, b3
+    
+    return state2
+
+def rot_word(w):
+    return w[1:] + w[:1]
+
+def sub_word(w):
+    return [SBOX[b] for b in w]
+
+def xor_words(w1, w2):
+    return [b1 ^ b2 for b1, b2 in zip(w1, w2)]
+
+def inv_expand_key(round_key_4):
+    Nk = 4
+    Nb = 4
+    Nr = 4
+
+    W = [0] * (Nb * (Nr + 1) * Nk // Nk)
+    
+    for i in range(Nb):
+        W[16 + i] = list(round_key_4[4*i : 4*i+4])
+    
+    for i in range(Nb*(Nr+1) - 1, Nk - 1, -1):
+        if i % Nk == 0:
+            temp = sub_word(rot_word(W[i-1]))
+            temp[0] ^= RCON[i // Nk]
+        else:
+            temp = W[i-1]
+        W[i - Nk] = xor_words(W[i], temp)
+    
+    key0 = []
+    for j in range(Nk):
+        key0.extend(W[j])
+    
+    return bytes(key0)
+
+def decrypt(c, key):
+    round_keys = expand_key(key)
+    state = list(c)
+
+    state = add_round_key(state, round_keys[N_ROUNDS])
+
+    state = inv_shift_rows(state)
+    state = inv_sub_bytes(state)
+
+    for i in range(N_ROUNDS - 1, 0, -1):
+        state = add_round_key(state, round_keys[i])
+        state = inv_mix_diagonals(state)
+        state = inv_shift_rows(state)
+        state = inv_sub_bytes(state)
+
+    state = add_round_key(state, round_keys[0])
+
+    return bytes(state)
+
+
+r = process(['python', 'chall.py'])
+r.recvuntil(b"secreto: ")
+c = bytes.fromhex(r.recvline().strip().decode())
+
+delta = []
+for i in range(256):
+    r.sendlineafter(b"> ", bytes([i] + [0]*15).hex().encode())
+    r.recvuntil(b"Tu mensaje cifrado: ")
+    delta.append(list(bytes.fromhex(r.recvline().strip().decode())))
+
+keystream = []
+for pos in range(16):
+    key_pos = []
+    for key_byte in range(256):
+        delta_inv = []
+        for el in range(256):
+            state = inv_sub_bytes([b ^ key_byte if i == pos else b for i, b in enumerate(delta[el])])
+            delta_inv.append(state)
+
+        b = 0
+        for state in delta_inv:
+            b ^= state[pos]
+                
+        if b == 0:
+            key_pos.append(key_byte)
+    keystream.append(key_pos)
+
+for combination in product(*keystream):
+    round_key = bytes(combination)
+    key = inv_expand_key(round_key)
+
+    m = decrypt(c, key)
+    if b"nnctf" in m:
+        print(m)
+```
+
+> **flag: nnctf{sqU4r3355}**

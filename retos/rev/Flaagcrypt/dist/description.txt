@@ -1,0 +1,5 @@
+He desarrollado mi primer malware, sin embargo, este está diseñado para ser la peor pesadilla de un jugador de CTFs. Flag que vea el malware, flag que se merienda.
+
+¿Podrás sacar la flag del malware?
+
+Nota: Este malware va a intentar encriptar todos los ficheros que tengan la palabra 'flag' en el nombre, en la misma carpeta en la que se encuentra el malware. Se recomienda precaución a la hora de ejecutarlo. No es recursivo buscando ficheros.

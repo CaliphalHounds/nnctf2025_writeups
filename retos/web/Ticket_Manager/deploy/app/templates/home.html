@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Navaja Negra Ticket Manager - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background: #111; 
+            color: #eee; 
+            padding: 20px;
+        }
+        h1 { 
+            font-size: 2.5em; 
+            text-align: center; 
+            margin-bottom: 30px; 
+            color: #fff; 
+            text-shadow: 2px 2px 5px #000; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: auto; 
+            background: #222; 
+            padding: 20px; 
+            border-radius: 10px; 
+        }
+        textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border-radius: 5px; 
+            border: none; 
+            margin-bottom: 10px; 
+            resize: vertical;
+            background: #333; 
+            color: #eee;
+        }
+        button { 
+            background: #444; 
+            color: #eee; 
+            border: none; 
+            padding: 10px 15px; 
+            margin: 5px 0; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold; 
+        }
+        button:hover { background: #666; }
+        .text-item { 
+            background: #333; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            border-radius: 5px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .flash { 
+            margin: 5px 0; 
+            padding: 5px; 
+            border-radius: 3px; 
+        }
+        .success { background: #0a0; }
+        .error { background: #a00; }
+        .logout { text-align: right; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <h1>Navaja Negra Ticket Manager</h1>
+
+    <div class="container">
+        <div class="logout">
+            <form action="/logout">
+                <button>Logout</button>
+            </form>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <textarea name="text" placeholder="Write something..." rows="3" required></textarea>
+            <button type="submit" name="action" value="upload">Upload Text</button>
+        </form>
+
+<h2>Your Texts</h2>
+{% for text in texts %}
+    <div class="text-item">
+        <span>{{ text.content }}</span>
+        <form method="POST" style="display:inline-block; margin-left:10px;">
+            <button type="submit" name="action" value="delete_{{ text.id }}">Delete</button>
+        </form>
+
+        <!-- Modify text form -->
+        <form method="POST" style="display:inline-block; margin-left:10px;">
+            <input type="text" name="new_text_{{ text.id }}" placeholder="New text" required>
+            <button type="submit" name="action" value="modify_{{ text.id }}">Modify</button>
+        </form>
+    </div>
+{% else %}
+    <p>No texts uploaded yet.</p>
+{% endfor %}
+
